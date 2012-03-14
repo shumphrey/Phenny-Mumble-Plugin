@@ -1,0 +1,12 @@
+This is a plugin to the Python IRC bot 'Phenny' (http://inamidst.com/phenny/).
+It provides various commands to access the mumble server (Murmur)
+
+To install this plugin, add the following 4 settings to ~/.phenny/default.py
+
+mumble_ip     = "127.0.0.1"
+mumle_port    = "6502"
+mumble_slice  = "/path/to/Murmur.ice"
+mumble_secret = "mymumblesecret"
+
+Replace the values with values appropriate for yout Murmur system.
+Murmur.ice should come with your murmur install.
