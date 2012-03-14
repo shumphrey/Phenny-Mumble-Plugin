@@ -8,5 +8,5 @@ mumle_port    = "6502"
 mumble_slice  = "/path/to/Murmur.ice"
 mumble_secret = "mymumblesecret"
 
-Replace the values with values appropriate for yout Murmur system.
+Replace the values with values appropriate for your Murmur system.
 Murmur.ice should come with your murmur install.
