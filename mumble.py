@@ -12,7 +12,6 @@ http://mumble.sourceforge.net/Ice
 """
 
 import Ice
-#import sys
 
 def setup(self):
     """Sets up ICE"""
@@ -26,8 +25,10 @@ def setup(self):
 
     idd = Ice.InitializationData()
     idd.properties = prop
+    global ice
     ice = Ice.initialize(idd)
     ice.getImplicitContext().put("secret", icesecret.encode("utf-8"))
+    global Murmur
     import Murmur
 
 
@@ -42,8 +43,10 @@ def get_server(phenny):
         
     connstring = "Meta:tcp -h %s -p %s" % (mumble_ip, mumble_port)
 
+    global ice
     proxy = ice.stringToProxy( connstring.encode("utf-8") )
 
+    global Murmur
     meta = Murmur.MetaPrx.checkedCast(proxy)
     server = meta.getServer(1)
     return server
