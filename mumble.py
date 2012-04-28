@@ -12,6 +12,7 @@ http://mumble.sourceforge.net/Ice
 """
 
 import Ice
+import threading, time
 
 def setup(self):
     """Sets up ICE"""
