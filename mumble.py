@@ -30,7 +30,42 @@ def setup(self):
     ice.getImplicitContext().put("secret", icesecret.encode("utf-8"))
     global Murmur
     import Murmur
+    ## Set up threaded checker
+    t = threading.Timer(20.0, mumble_auto_loop, [self])
+    t.start()
 
+
+def mumble_auto_loop(phenny):
+    server = get_server(phenny)
+    users = server.getUsers()
+    usernames = []
+    for uk in users:
+        usernames.append(users[uk].name)
+    recip = phenny.config.mumble_channels
+    for r in recip:
+        phenny.msg(r, ", ".join(usernames))
+
+    while(True):
+        time.sleep(10)
+        server = get_server(phenny)
+        users = server.getUsers()
+        currentusers = []
+        for uk in users:
+            currentusers.append(users[uk].name)
+        for name in currentusers:
+            try:
+                usernames.index(name)
+            except:
+                for r in recip:
+                    phenny.msg(r, name + " has joined mumble")
+                usernames.append(name)
+        for name in usernames:
+            try:
+                currentusers.index(name)
+            except:
+                for r in recip:
+                    phenny.msg(r, name + " has left mumble")
+                usernames.remove(name)
 
 def get_server(phenny):
     """Returns the mumble server"""
