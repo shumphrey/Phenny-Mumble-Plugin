@@ -49,16 +49,16 @@ def setup(self):
     t.start()
 
 
-def mumble_auto_loop(phenny):
+def mumble_auto_loop(bot):
     """Poll the mumble server every X seconds for new users"""
-    if phenny.config.mumble:
-        recip = phenny.config.mumble.channels.split(',')
+    if bot.config.mumble:
+        recip = bot.config.mumble.channels.split(',')
     else:
-        recip = phenny.config.mumble_channels
+        recip = bot.config.mumble_channels
     if not recip:
         return
 
-    server = get_server(phenny)
+    server = get_server(bot)
     users = server.getUsers()
 
     ## Populate an initial list of usernames and report that to channel
@@ -69,16 +69,16 @@ def mumble_auto_loop(phenny):
         usernames.append(name)
     if len(usernames) == 1:
         for r in recip:
-            phenny.msg(r, ", ".join(usernames) + " is currently on mumble")
+            bot.msg(r, ", ".join(usernames) + " is currently on mumble")
     elif len(usernames) > 0:
         for r in recip:
-            phenny.msg(r, ", ".join(usernames) + " are currently on mumble")
+            bot.msg(r, ", ".join(usernames) + " are currently on mumble")
 
     ## Loop forever, every 30s, checking for new users
     ## If there are new users, tell the channel about them
     while(True):
         time.sleep(30)
-        server = get_server(phenny)
+        server = get_server(bot)
         users = server.getUsers()
         currentusers = []
 
@@ -100,7 +100,7 @@ def mumble_auto_loop(phenny):
                 usernames.remove(name)
         if len(parted_users) > 1 and len(usernames) == 0:
             for r in recip:
-                phenny.msg(r,  + "There are no more users connected to mumble")
+                bot.msg(r,  + "There are no more users connected to mumble")
         if joined_users:
             message = ", ".join(joined_users)
             if len(joined_users) > 1:
@@ -108,19 +108,19 @@ def mumble_auto_loop(phenny):
             else:
                 message = message + " has joined mumble"
             for r in recip:
-                phenny.msg(r, message)
+                bot.msg(r, message)
 
-def get_server(phenny):
+def get_server(bot):
     """Returns the mumble server"""
-    if phenny.config.mumble:
-        mumble_ip = phenny.config.mumble.ip
-        mumble_port = phenny.config.mumble.port
+    if bot.config.mumble:
+        mumble_ip = bot.config.mumble.ip
+        mumble_port = bot.config.mumble.port
     else:
-        mumble_ip     = phenny.config.mumble_ip
-        mumble_port   = phenny.config.mumble_port or "6502"
+        mumble_ip     = bot.config.mumble_ip
+        mumble_port   = bot.config.mumble_port or "6502"
 
     if not mumble_ip:
-        phenny.say("mumble is not configured")
+        bot.say("mumble is not configured")
         return
         
     connstring = "Meta:tcp -h %s -p %s" % (mumble_ip, mumble_port)
@@ -134,15 +134,15 @@ def get_server(phenny):
     return server
 
 
-def mumble_send(phenny, input):
+def mumble_send(bot, input):
     """Sends a message to mumble server"""
-    server = get_server(phenny)
+    server = get_server(bot)
     message = input.group(2)
     if message:
         server.sendMessageChannel(0, False, message)
-        phenny.say("Message sent to first channel tree")
+        bot.say("Message sent to first channel tree")
     else:
-        phenny.say("usage: .mumblesend some text")
+        bot.say("usage: .mumblesend some text")
 
 mumble_send.commands = ['mumblesend']
 mumble_send.priority = 'medium'
