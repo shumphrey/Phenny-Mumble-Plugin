@@ -1,5 +1,7 @@
-This is a plugin to the Python IRC bot 'Phenny' (http://inamidst.com/phenny/)
-and the IRC bot 'sopel' (git@github.com:shumphrey/Phenny-Mumble-Plugin.git)
+# Phenny/Sopel Mumble Module
+
+This is a plugin to the Python IRC bot [Phenny](http://inamidst.com/phenny/)
+and the IRC bot [sopel](http://sopel.chat/)
 It provides various commands to access the mumble server (Murmur)
 
 To install this plugin, add the following settings to ~/.phenny/default.py
