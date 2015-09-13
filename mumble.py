@@ -33,6 +33,7 @@ def setup(self):
     global Murmur
     import Murmur
     ## Set up threaded checker
+    print "set up and now starting timer thread"
     t = threading.Timer(20.0, mumble_auto_loop, [self])
     t.start()
 
@@ -41,33 +42,50 @@ def mumble_auto_loop(phenny):
     server = get_server(phenny)
     users = server.getUsers()
     usernames = []
-    for uk in users:
-        usernames.append(users[uk].name)
     recip = phenny.config.mumble_channels
-    for r in recip:
-        phenny.msg(r, ", ".join(usernames))
+    for key in users:
+        name = users[key].name
+        usernames.append(name)
+    if len(usernames) == 1:
+        for r in recip:
+            phenny.msg(r, ", ".join(usernames) + " is currently on mumble")
+    elif len(usernames) > 0:
+        for r in recip:
+            phenny.msg(r, ", ".join(usernames) + " are currently on mumble")
 
     while(True):
         time.sleep(10)
         server = get_server(phenny)
         users = server.getUsers()
         currentusers = []
+
+        joined_users = []
+        parted_users = []
         for uk in users:
             currentusers.append(users[uk].name)
         for name in currentusers:
             try:
                 usernames.index(name)
             except:
-                for r in recip:
-                    phenny.msg(r, name + " has joined mumble")
+                joined_users.append(name)
                 usernames.append(name)
         for name in usernames:
             try:
                 currentusers.index(name)
             except:
-                for r in recip:
-                    phenny.msg(r, name + " has left mumble")
+                parted_users.append(name)
                 usernames.remove(name)
+        if len(parted_users) > 1 and len(usernames) == 0:
+            for r in recip:
+                phenny.msg(r,  + "There are no more users connected to mumble")
+        if joined_users:
+            message = ", ".join(joined_users)
+            if len(joined_users) > 1:
+                message = message + " have joined mumble"
+            else:
+                message = message + " has joined mumble"
+            for r in recip:
+                phenny.msg(r, message)
 
 def get_server(phenny):
     """Returns the mumble server"""
@@ -109,13 +127,13 @@ def mumble_users(phenny, input):
 
     users = server.getUsers()
     if len(users) == 0:
-        phenny.say("no users connected")
+        phenny.say("No users connected to mumble")
         return
     names = []
     for key in users:
         name = users[key].name
         names.append(name)
-    phenny.say(", ".join(names))
+    phenny.say("Mumble users: " + ", ".join(names))
 
 mumble_users.commands = ['mumble']
 mumble_users.priority = 'medium'
