@@ -21,6 +21,7 @@ def setup(self):
 
     Ice.loadSlice('', ['-I' + Ice.getSliceDir(), slicefile ] )
     prop = Ice.createProperties([])
+    prop.setProperty('Ice.Default.EncodingVersion', '1.0')
     prop.setProperty("Ice.ImplicitContext", "Shared")
     prop.setProperty("Ice.MessageSizeMax",  "65535")
 
