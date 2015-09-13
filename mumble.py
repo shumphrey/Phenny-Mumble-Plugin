@@ -50,6 +50,7 @@ def setup(self):
 
 
 def mumble_auto_loop(phenny):
+    """Poll the mumble server every X seconds for new users"""
     if phenny.config.mumble:
         recip = phenny.config.mumble.channels.split(',')
     else:
@@ -59,6 +60,9 @@ def mumble_auto_loop(phenny):
 
     server = get_server(phenny)
     users = server.getUsers()
+
+    ## Populate an initial list of usernames and report that to channel
+    ## when bot joins
     usernames = []
     for key in users:
         name = users[key].name
@@ -70,6 +74,8 @@ def mumble_auto_loop(phenny):
         for r in recip:
             phenny.msg(r, ", ".join(usernames) + " are currently on mumble")
 
+    ## Loop forever, every 30s, checking for new users
+    ## If there are new users, tell the channel about them
     while(True):
         time.sleep(30)
         server = get_server(phenny)
@@ -143,7 +149,7 @@ mumble_send.priority = 'medium'
 
 
 def mumble_users(phenny, input): 
-    """Shows the users connected to mumble."""
+    """Shows the users connected to mumble"""
     server = get_server(phenny)
 
     users = server.getUsers()
