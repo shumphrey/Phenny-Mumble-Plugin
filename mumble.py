@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 """
-mumble.py - Phenny Mumble Module
-Copyright 2012, Steven Humphrey
+mumble.py - Phenny/Sopel Mumble Module
+Copyright 2015, Steven Humphrey
 Licensed under the Eiffel Forum License 2.
 
-To get this to work, please add 4 keys to the config:
-mumble_ip, mumble_port, mumble_slice, mumble_secret.
-mumble_slice should be the path to the Murmur.ice file.
+To get this to work, please add the following config section to your sopel
+config.
+
+    [mumble]
+    ip = ...
+    slice = /path/to/slice/file
+    port = ...
+    secret = ...
+
+slice should be the path to the Murmur.ice file.
 
 http://mumble.sourceforge.net/Ice
 """
@@ -16,8 +23,12 @@ import threading, time
 
 def setup(self):
     """Sets up ICE"""
-    slicefile = self.config.mumble_slice
-    icesecret = self.config.mumble_secret
+    if self.config.mumble:
+        slicefile = self.config.mumble.slice
+        icesecret = self.config.mumble.secret
+    else:
+        slicefile = self.config.mumble_slice
+        icesecret = self.config.mumble_secret
 
     Ice.loadSlice('', ['-I' + Ice.getSliceDir(), slicefile ] )
     prop = Ice.createProperties([])
@@ -39,10 +50,16 @@ def setup(self):
 
 
 def mumble_auto_loop(phenny):
+    if phenny.config.mumble:
+        recip = phenny.config.mumble.channels.split(',')
+    else:
+        recip = phenny.config.mumble_channels
+    if not recip:
+        return
+
     server = get_server(phenny)
     users = server.getUsers()
     usernames = []
-    recip = phenny.config.mumble_channels
     for key in users:
         name = users[key].name
         usernames.append(name)
@@ -54,7 +71,7 @@ def mumble_auto_loop(phenny):
             phenny.msg(r, ", ".join(usernames) + " are currently on mumble")
 
     while(True):
-        time.sleep(10)
+        time.sleep(30)
         server = get_server(phenny)
         users = server.getUsers()
         currentusers = []
@@ -89,8 +106,12 @@ def mumble_auto_loop(phenny):
 
 def get_server(phenny):
     """Returns the mumble server"""
-    mumble_ip     = phenny.config.mumble_ip
-    mumble_port   = phenny.config.mumble_port or "6502"
+    if phenny.config.mumble:
+        mumble_ip = phenny.config.mumble.ip
+        mumble_port = phenny.config.mumble.port
+    else:
+        mumble_ip     = phenny.config.mumble_ip
+        mumble_port   = phenny.config.mumble_port or "6502"
 
     if not mumble_ip:
         phenny.say("mumble is not configured")
