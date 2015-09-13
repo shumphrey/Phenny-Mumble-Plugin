@@ -51,7 +51,10 @@ def setup(self):
 
 def mumble_auto_loop(bot):
     """Poll the mumble server every X seconds for new users"""
+    loop_timer = 30
     if bot.config.mumble:
+        if bot.config.mumble.timer and bot.config.mumble.timer > 0:
+            loop_timer = bot.config.mumble.timer
         recip = bot.config.mumble.channels.split(',')
     else:
         recip = bot.config.mumble_channels
@@ -77,7 +80,7 @@ def mumble_auto_loop(bot):
     ## Loop forever, every 30s, checking for new users
     ## If there are new users, tell the channel about them
     while(True):
-        time.sleep(30)
+        time.sleep(loop_timer)
         server = get_server(bot)
         users = server.getUsers()
         currentusers = []
