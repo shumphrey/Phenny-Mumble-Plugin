@@ -21,6 +21,8 @@ http://mumble.sourceforge.net/Ice
 import Ice
 import threading, time
 
+from sopel.config.types import StaticSection, FilenameAttribute, ValidatedAttribute
+
 def setup(self):
     """Sets up ICE"""
     if self.config.mumble:
@@ -167,6 +169,21 @@ def mumble_users(phenny, input):
 
 mumble_users.commands = ['mumble']
 mumble_users.priority = 'medium'
+
+class MumbleSection(StaticSection):
+    slicefile = ValidatedAttribute('slice') # FilenameAttribute doesn't seem to work
+    icesecret = ValidatedAttribute('secret')
+    ip        = ValidatedAttribute('ip', default='127.0.0.1')
+    port      = ValidatedAttribute('port', default='6502')
+    timer     = ValidatedAttribute('timer');
+
+def configure(config):
+    config.define_section('mumble', MumbleSection)
+    config.mumble.configure_setting('ip', 'IP Address of Mumble server');
+    config.mumble.configure_setting('port', 'Port of Mumble server');
+    config.mumble.configure_setting('icesecret', 'Mumble secret password');
+    config.mumble.configure_setting('slicefile', 'Path to Murmur.ice');
+    config.mumble.configure_setting('ip', 'IP Address of Mumble server');
 
 
 if __name__ == '__main__': 
